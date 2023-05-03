@@ -1,0 +1,65 @@
+type Transaction {
+  id: ID!
+  name: String!
+  cod: String
+  value: Float!
+  quantity: Float!
+  currency: Currency!
+  platform: Platform!
+  platformId: ID!
+  createdAt: Date!
+  purchaseTRM: Float
+  expireAt: Date
+  box: Boxes!
+  owner: String
+  currentPrice: Float
+}
+
+extend type Query {
+  transaction(id: ID!): Transaction
+  transactions: [Transaction]!
+}
+
+input NewTransaction {
+  name: String!
+  value: Float!
+  cod: String
+  quantity: Float!
+  currency: Currency!
+  platformId: ID!
+  expireAt: Date
+  createdAt: Date!
+  purchaseTRM: Float
+  box: Boxes!
+  owner: String!
+}
+
+input UpdateTransaction {
+  name: String
+  cod: String
+  value: Float
+  quantity: Float
+  currency: Currency
+  platformId: ID
+  createdAt: Date
+  purchaseTRM: Float
+  expireAt: Date
+  box: Boxes
+  owner: String
+}
+
+extend type Mutation {
+  createTransaction(newInput: NewTransaction!): Transaction!
+  updateTransaction(id: ID!, updateInput: UpdateTransaction): Transaction!
+  deleteTransaction(id: ID!): ID
+}
+
+enum Boxes {
+  RISK
+  SAFETY
+}
+
+enum Currency {
+  COP
+  USD
+}

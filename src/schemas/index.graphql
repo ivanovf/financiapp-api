@@ -1,0 +1,35 @@
+type Query {
+  _empty: String
+  # define any root queries here
+  user(id: ID!): User!
+  users: [User]!
+  userByEmail(email: String): User
+}
+type Mutation {
+  _empty: String
+  # define any root queries here
+  login(email: String!, password: String!): AuthResponse
+  register(name: String!, email: String!, password: String!): User!
+  updatePassword(id: ID!, password: String): User
+  updateUser(id: ID!, name: String!): User!
+  deleteUser(id: ID!): ID
+}
+
+type AuthResponse {
+  access_token: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUser {
+  name: String
+  password: String
+}
+
+scalar Date

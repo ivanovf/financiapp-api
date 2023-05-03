@@ -1,0 +1,26 @@
+type Platform {
+  id: ID!
+  name: String!
+  API: String
+}
+
+extend type Query {
+  platform(id: ID!): Platform
+  platforms: [Platform]!
+}
+
+input NewPlatform {
+  name: String!
+  API: String
+}
+
+input UpdatePlatform {
+  name: String
+  API: String
+}
+
+extend type Mutation {
+  createPlatform(newInput: NewPlatform!): Platform!
+  updatePlatform(id: ID!, updateInput: UpdatePlatform): Platform!
+  deletePlatform(id: ID!): ID
+}
