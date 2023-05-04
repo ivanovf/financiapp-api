@@ -5,7 +5,6 @@ const cors = require('cors');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { loadSchemaSync } = require('@graphql-tools/load');
 const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader');
-const puppeteer = require('puppeteer');
 
 bodyParser = require('body-parser');
 require('dotenv').config();
@@ -100,21 +99,3 @@ async function startServer() {
 }
 
 startServer();
-
-(async () => {
-  try {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(process.env.BVC_API);
-    await page.waitForSelector('#quote-header-info', { timeout: 1000 });
-
-    const body = await page.evaluate(() => {
-      return document.querySelector('fin-streamer[data-symbol="ECOPETROL.CL"]').value;
-    });
-    console.log(body);
-
-    await browser.close();
-  } catch (error) {
-    console.log(error);
-  }
-})();
