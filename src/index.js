@@ -93,7 +93,7 @@ async function startServer() {
   server.applyMiddleware({ app });
 
   // Start the server
-  app.listen(process.env.PORT || 4000, () => {
+  app.listen(port, () => {
     console.log(`Server ready at http://localhost:${process.env.PORT} ${server.graphqlPath}`);
   });
 }
