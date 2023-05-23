@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -52,8 +53,6 @@ const authenticate = (req, res, next) => {
   const body = req.body;
   const operationName = body && body.operationName;
 
-  console.log(operationName);
-
   if (operationName === 'Login') {
     // Skip authentication for login mutation
     return next();
@@ -76,6 +75,18 @@ const authenticate = (req, res, next) => {
 
   next();
 }
+
+app.get('/local-shares', (req, res) => {
+  fs.readFile('./data/local-prices.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      const jsonData = JSON.parse(data);
+      res.json(jsonData);
+    }
+  });
+});
 
 app.use(cors({
   origin: '*'

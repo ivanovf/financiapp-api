@@ -1,3 +1,4 @@
 {
-  "ext": "js,json,graphql"
+  "ext": "js,json,graphql",
+  "ignore": ["data/*.json", "README"] 
 }

@@ -62,6 +62,11 @@ transactionSchema.virtual('currentPrice').get(async function() {
     const price = await TradeManager.getAssetPrice(this.cod);
     return price.c * this.quantity;
   }
+  else if (this.currency === 'COP' && this.cod) {
+    const price = await TradeManager.getAssetPriceCop(this.cod);
+    console.log(price[0].price);
+    return price[0].price * this.quantity;
+  }
   else {
     return this.value;
   }
