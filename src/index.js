@@ -1,4 +1,5 @@
 const express = require('express');
+const https = require('https');
 const fs = require('fs');
 const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
@@ -23,16 +24,17 @@ const dbUrl = `mongodb://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}`;
 const app = express();
   
 mongoose.connect(dbUrl, {
-
   authSource: "admin",
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  retryWrites: true,
+  w: "majority"
 })
 .then(() => {
   console.log('MongoDB connected');
 })
 .catch((err) => {
-  console.error(`MongoDB connection error: ${err}`);
+  console.error(`MongoDB connection error: ${dbUrl} \n ${err}`);
 });
 
 const schema = makeExecutableSchema({
@@ -95,6 +97,19 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(authenticate);
 
+// Read the SSL certificate files
+const privateKey = fs.readFileSync('./private/key.pem', 'utf8');
+const certificate = fs.readFileSync('./private/certificate.pem', 'utf8');
+
+// Create the HTTPS server options
+const serverOptions = {
+  key: privateKey,
+  cert: certificate
+};
+
+// Create the HTTPS server using the Express app
+const httpsServer = https.createServer(serverOptions, app);
+
 const port = process.env.PORT || 3000;
 
 async function startServer() {
@@ -104,7 +119,7 @@ async function startServer() {
   server.applyMiddleware({ app });
 
   // Start the server
-  app.listen(port, () => {
+  httpsServer.listen(port, () => {
     console.log(`Server ready at http://localhost:${process.env.PORT} ${server.graphqlPath}`);
   });
 }
