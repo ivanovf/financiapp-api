@@ -25,9 +25,13 @@ class TransactionService {
     return transaction;
   }
 
-  async findAll() {
+  async findAll(includePrice = true) {
     try {
       const transactions = await TransactionModel.find().populate('platformId');
+
+      if (!includePrice) {
+        return transactions;
+      }
       
       // Get current price of each transaction
       const transactionsWithPrice = transactions.map(async (transaction) => {

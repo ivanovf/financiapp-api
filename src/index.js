@@ -2,7 +2,6 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const { ApolloServer } = require('apollo-server-express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { loadSchemaSync } = require('@graphql-tools/load');
@@ -13,30 +12,8 @@ require('dotenv').config();
 
 const resolvers = require('./resolvers');
 const { authService } = require('./services/auth.service');
-
-const dbUser = process.env.DB_USER;
-const dbPass = process.env.DB_PASS;
-const dbHost = process.env.DB_HOST;
-const dbPort = process.env.DB_PORT? `:${process.env.DB_PORT}` : '';
-const dbName = process.env.DB_NAME;
-const dbDriver = process.env.DB_DRIVER;
-
-const dbUrl = `${dbDriver}://${dbUser}:${dbPass}@${dbHost}${dbPort}/${dbName}`;
+const connect = require('./database/connection');
 const app = express();
-  
-mongoose.connect(dbUrl, {
-  authSource: "admin",
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  retryWrites: true,
-  w: "majority"
-})
-.then(() => {
-  console.log('MongoDB connected');
-})
-.catch((err) => {
-  console.error(`MongoDB connection error: ${dbUrl} \n ${err}`);
-});
 
 const schema = makeExecutableSchema({
   typeDefs: loadSchemaSync('./src/schemas/*.graphql', {
@@ -114,6 +91,7 @@ const httpsServer = https.createServer(serverOptions, app);
 const port = process.env.PORT || 3000;
 
 async function startServer() {
+  await connect();
   await server.start();
 
   // Apply the Apollo middleware to the Express app
@@ -121,7 +99,7 @@ async function startServer() {
 
   // Start the server
   httpsServer.listen(port, () => {
-    console.log(`Server ready at http://localhost:${process.env.PORT} ${server.graphqlPath}`);
+    console.log(`Server ready at https://localhost:${process.env.PORT} ${server.graphqlPath}`);
   });
 }
 
