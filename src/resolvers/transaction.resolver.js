@@ -5,7 +5,7 @@ const transactionResolvers = {
     transaction: async (_, { id }) => {
       return await transactionService.findById(id);
     },
-    transactions: async () => await transactionService.findAll(),
+    transactions: async () => await transactionService.findAll(true),
   },
   Mutation: {
     createTransaction: async (_, { newInput }) => {
